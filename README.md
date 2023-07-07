@@ -1,6 +1,6 @@
-# OpenLI-Installation
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/609f4486-8a27-43c8-bfd8-d9f8f2844bc8)# OpenLI-Installation
 
-OpenLI can only be run on machines that are running Linux, there are no OpenLI binaries for windows or mac nor there are any long term plans to build OpenLI for these OS.
+OpenLI can only be run on machines that are running Linux, there are no OpenLI binaries for Windows or Mac nor there are any long-term plans to build OpenLI for these OS.
 
 Best way to install and maintain OpenLI - **Automatic dependency management**
 
@@ -64,20 +64,38 @@ sudo service openli-collector status
 
 ![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/7e8a141c-95dd-46fb-88f8-b24457df83d5)
 
-#### 4. OpenLI configuration files belong `/etc/openli/`.
+#### 4. OpenLI configuration files.
 
-Provisioner: `/etc/openli/provisioner-config.yaml` 
+OpenLI configuration files must be placed in the `/etc/openli/` directory which will be created when the first component package is installed.
 
-Collector: `/etc/openli/collector-config.yaml`
+- Provisioner: `/etc/openli/provisioner-config.yaml` 
 
-Mediator: `/etc/openli/mediator-config.yaml`
+- Collector: `/etc/openli/collector-config.yaml`
 
-Active intercept configuration: `/etc/openli/running-intercept-config.yaml`
+- Mediator: `/etc/openli/mediator-config.yaml`
 
-Example configs are pre-installed - Named differently to avoid accidental use
+- Active intercept configuration: `/etc/openli/running-intercept-config.yaml`
 
-> **Note**: Configuration files are not present by default, create and configure it manually.
+> **Note**: Example configs are pre-installed - Named differently to avoid accidental use.
 
+- Rsyslog config for OpenLI is installed in `/etc/openli/rsyslog.d`
+  - Move this config into `/etc/rsyslog.d` to enable
+  - Restart the `rsyslog` daemon using the `sudo systemctl restart rsyslog` command.
+  - OpenLI will then log to `/var/log/openli`. Otherwise, all OpenLI components log into `/var/log/messages`.
+ 
+### Updating Installed Packages:
+
+```bash
+sudo apt update && sudo apt upgrade
+```
+
+### Removing Installed Packages:
+
+```bash
+sudo apt remove --purge openli-collector
+sudo apt remove --purge openli-provisioner
+sudo apt remove --purge openli-mediator
+```
 
 
 
