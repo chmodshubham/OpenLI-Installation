@@ -1,4 +1,4 @@
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/609f4486-8a27-43c8-bfd8-d9f8f2844bc8)# OpenLI-Installation
+# OpenLI-Installation
 
 OpenLI can only be run on machines that are running Linux, there are no OpenLI binaries for Windows or Mac nor there are any long-term plans to build OpenLI for these OS.
 
