@@ -97,6 +97,42 @@ sudo apt remove --purge openli-provisioner
 sudo apt remove --purge openli-mediator
 ```
 
+## OpenLI Training Lab:
 
+Sandbox environment for experimenting with OpenLI:
 
+- No special hardware is required, just a Linux server/VM or laptop
+- Docker containers for each component
+- A fake LEA that will receive and output intercepts
+- Does NOT require a real network tap, instead use `pcap` traces that can be replayed into the lab network to emulate the real-world traffic that can be intercepted.
+
+### Lab Setup
+
+#### 1. Install `docker`
+
+```bash
+sudo apt-get update
+
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# to run docker without sudo:
+sudo usermod -aG docker ${USER}
+su - ${USER}
+sudo chmod 666 /var/run/docker.sock
+```
 
