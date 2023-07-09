@@ -8,13 +8,13 @@
 
 ## Provisioner Configuration
 
-#### 1. Container Login
+### 1. Container Login
 
 ```bash
 docker exec -it openli-provisioner /bin/bash
 ```
 
-#### 2. Query the container's IP Address on the openli-lab network
+### 2. Query the container's IP Address on the openli-lab network
 
 ```bash
 ip addr list eth1
@@ -24,7 +24,7 @@ ip addr list eth1
 
 In my case, the IP address of `eth1` is `172.18.0.2`.
 
-#### 3. Configuration
+### 3. Configuration
 
 ```bash
 vim /etc/openli/provisioner-config.yaml
@@ -39,9 +39,9 @@ mediationport: <MEDIATORPORT>
 mediationaddr: <PROVIP>
 ```
 
-#### 4. Configuring Listening IPs
+#### A. Configuring Listening IPs
 
-Replace all instances of `<PROVIP>` with the correct IP Address.
+Replace all instances of `<PROVIP>` with the correct IP Address i.e. `172.18.0.2`.
 
 ```bash
 clientport: <COLLECTORPORT>
@@ -52,7 +52,7 @@ mediationport: <MEDIATORPORT>
 mediationaddr: 172.18.0.2
 ```
 
-#### 4. Configuring Ports
+#### B. Configuring Ports
 
 Choose 3 distinct ports for listening services(any port no. > 1024):
 * One for the REST API -- **8080**
@@ -74,7 +74,7 @@ mediationport: 9002
 mediationaddr: 172.18.0.2
 ```
 
-#### 5. Logging with rsyslog
+### 4. Logging with rsyslog
 
 ```bash
 cp /etc/openli/rsyslog.d/10-openli-provisioner.conf /etc/rsyslog.d/
@@ -83,11 +83,12 @@ cp /etc/openli/rsyslog.d/10-openli-provisioner.conf /etc/rsyslog.d/
 stop_rsyslog.sh
 service rsyslog restart
 ```
+
 ![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/2f5a8499-bcee-43a9-97d7-212defd6f682)
 
 > **Note**: Unfortunately `docker` and `systemd` has some incompatibilities that mean `systemd` cannot be used to stop a service running within a container. This script is part of a specific glitch in the lab containers and is not a part of the regular openli configuration.
 
-#### 6. Starting the Provisioner
+### 5. Starting the Provisioner
 
 ```bash
 service openli-provisioner start
@@ -99,7 +100,7 @@ Examine Logs for any obvious error messages: `less /var/log/openli/provisioner.l
 
 ![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/d2197446-38bc-47df-b212-f9b2e6b1588b)
 
-### Stopping the Provisioner
+## Stopping the Provisioner
 
 ```bash
 # on the lab container 
