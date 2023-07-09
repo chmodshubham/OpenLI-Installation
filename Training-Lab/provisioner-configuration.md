@@ -1,4 +1,4 @@
-# Provisioner Configuration
+# The Provisioner
 
 **Central orchestrator for OpenLI**
 * All other components connect to the provisioner
@@ -6,6 +6,7 @@
 
 **Goal**: get the provisioner listening for client connections
 
+## Provisioner Configuration
 
 #### 1. Container Login
 
