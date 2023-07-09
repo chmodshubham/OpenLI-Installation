@@ -39,7 +39,7 @@ sudo chmod 666 /var/run/docker.sock
 
 ## Lab Setup
 
-#### 1. Build the Training Lab
+### 1. Build the Training Lab
 
 ```bash
 git clone https://github.com/wanduow/openli-training-lab.git
@@ -63,7 +63,7 @@ After this script, 4 containers are now running on the host:
 
 ![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/4bfbf907-4638-47e9-8c35-e10e2af3791c)
 
-#### 2. Container Login
+### 2. Container Login
 
 ```bash
 docker exec -it openli-collector /bin/bash
