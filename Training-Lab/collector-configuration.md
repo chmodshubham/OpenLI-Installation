@@ -1,17 +1,19 @@
-# The Mediator
+# The Collector
 
-**Delivers intercepted traffic to the LEAS**
+**Intercepts network traffic and encodes into ETSI format**
 
-* Receives the intercepts from the collectors
-* Establishes and maintains handovers to LEAS
-* Ensure that the intercepted traffic goes to the right LEA
+* Receives instructions from the provisioner
+* Monitors session management protocols for target identities
+* Intercepts packets that belong to an intercept target
+* Labels and sequences intercepted packets о
+* Forwards encoded records to the mediator
 
-## Mediator Configuration
+## Collector Configuration
 
 ### 1. Container Login
 
 ```bash
-docker exec -it openli-mediator /bin/bash
+docker exec -it openli-collector /bin/bash
 ```
 
 ### 2. Query the container's IP Address on the openli-lab network
@@ -20,140 +22,127 @@ docker exec -it openli-mediator /bin/bash
 ip addr list eth1
 ```
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/0a01b617-aed5-4203-957c-43c87ade6733)
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/dbec43c3-c6cc-49d7-b4bb-49b6f771f126)
 
-In my case, the IP address of `eth1` is `172.18.0.3`.
+In my case, the IP address of `eth1` is `172.18.0.4`.
 
 ### 3. Configuration
 
 ```bash
-vim /etc/openli/mediator-config.yaml
+vim /etc/openli/collector-config.yaml
 ```
 
 ```bash
 operatorid: <OPID>
+networkelementid: openli-lab
+interceptpointid: col001
 
-listenport: <MEDLISTENPORT>
-listenaddr: <MEDIP>
+encoderthreads: 2
+
+inputs:
+  - uri: eth2
+    threads: 2
+    hasher: radius
+    #filter:
+
+etsitls: no
 
 provisioneraddr: <PROVIP>
-provisionerport: <MEDIATORPORT>
-
-mediatorid: <MEDIDNUM>
-
-etsitls: no
+provisionerport: <COLLECTORPORT>
 ```
 
-#### A. Configuring Listening IP
+#### A. Configuring Provisioner Connection
 
-Replace all instances of `<MEDIP>` with the correct IP Address i.e. `172.18.0.3`. 
-
+Replace all instances of `<PROVIP>` and `<COLLECTORPORT>` with the Provisioner IP Address(`172.18.0.2`) and `9001` port number respectively, as configured in the previous sections.
 
 ```bash
 operatorid: <OPID>
+networkelementid: openli-lab
+interceptpointid: col001
 
-listenport: <MEDLISTENPORT>
-listenaddr: 172.18.0.3
+encoderthreads: 2
 
-provisioneraddr: <PROVIP>
-provisionerport: <MEDIATORPORT>
-
-mediatorid: <MEDIDNUM>
+inputs:
+  - uri: eth2
+    threads: 2
+    hasher: radius
+    #filter:
 
 etsitls: no
-```
-
-#### B. Configuring Provisioner Connection
-
-Replace all instances of `<PROVIP>` and `<MEDIATORPORT>` with the Provisioner IP Address(`172.18.0.2`) and `9002` port number respectively, as configured in the previous section.
-
-```bash
-operatorid: <OPID>
-
-listenport: <MEDLISTENPORT>
-listenaddr: 172.18.0.3
 
 provisioneraddr: 172.18.0.2
-provisionerport: 9002
-
-mediatorid: <MEDIDNUM>
-
-etsitls: no
+provisionerport: 9001
 ```
 
-#### C. Listening for Collectors
+#### B. Collector Identity Fields
 
-Choose a distinctive port for the listening service.
-* Collectors will connect to this mediator on this port -- **12009**
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/71a3bbb3-a8d6-4022-95d6-2903cb881b0f)
 
-#### D. Configuring Listener
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/eb51c6c9-2c18-46b0-9809-c41867cd74dc)
 
-```bash
-operatorid: <OPID>
-
-listenport: 12009
-listenaddr: 172.18.0.3
-
-provisioneraddr: 172.18.0.2
-provisionerport: 9002
-
-mediatorid: <MEDIDNUM>
-
-etsitls: no
-```
-
-#### E. Mediator Identity Fields 
-
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/5b0bb1cc-5ec4-4474-80e2-2f724ea5864a)
-
-#### F. Configuring Identity
+#### C. Configuring Identity
 
 ```bash
 operatorid: WAND
+networkelementid: openli-lab
+interceptpointid: col001
 
-listenport: 12009
-listenaddr: 172.18.0.3
+encoderthreads: 2
 
-provisioneraddr: 172.18.0.2
-provisionerport: 9002
-
-mediatorid: 1
+inputs:
+  - uri: eth2
+    threads: 2
+    hasher: radius
+    #filter:
 
 etsitls: no
+
+provisioneraddr: 172.18.0.2
+provisionerport: 9001
 ```
+
+#### D. Configuring Capture Interfaces
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/8cdfab55-a8a8-454e-ab57-259f4b0191ee)
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/d9f499ad-c479-4224-b121-cae85f1cb413)
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/d768088a-43cd-4b14-b322-b562b11c7165)
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/80109bc6-a059-459b-a94e-82f8c7db940b)
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/6c9ff154-0673-42c7-ba68-69d4e1a6e2b4)
 
 ### 4. Logging with rsyslog
 
 ```bash
-cp /etc/openli/rsyslog.d/10-openli-mediator.conf /etc/rsyslog.d/
+cp /etc/openli/rsyslog.d/10-openli-collector.conf /etc/rsyslog.d/
 
 # This step is needed only when using the lab container
 stop_rsyslog.sh
 service rsyslog restart
 ```
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/1256dbb0-d54b-4153-9b46-10d665c27ae6)
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/dac912a2-6ee3-499d-a7a2-cbde340cd7d5)
 
-### 5. Starting the Mediator
+### 5. Starting the Collector
 
 ```bash
-service openli-mediator start
+service openli-collector start
 ```
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/bd3e9dc9-4ee7-40c5-b89e-ae2ffacd7f8d)
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/8797d54c-2b9e-4c9c-b71a-1d47769c6a62)
 
-Examine Logs for any obvious error messages: `less /var/log/openli/mediator.log`.
+Examine Logs for any obvious error messages: `less /var/log/openli/collector.log`.
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/4a358228-b3ee-4924-ae34-6d8b272c314b)
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/10c96fd2-bd80-47cb-af24-1641f6b090da)
 
-### Stopping the Mediator
+### Stopping the Collector
 
 ```bash
 # on the lab container 
-service openli-mediator stop
-stop_mediator.sh
+service openli-collector stop
+stop_collector.sh
 ```
 
-[Collector Configuration](./collector-configuration.md)
-
-
+[Simulating a dummy LEA](./dummy-LEA.md)
