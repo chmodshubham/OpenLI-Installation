@@ -46,6 +46,12 @@ sudo apt-get install openli-collector
 
 > **Note**: For testing, installing all the components on the same host is OK. In real OpenLI deployment, each package would probably be installed on a different host.
 
+You may also want to install the `libtrace4-tools` package to gain access to the `tracepktdump` tool, which is very handy for verifying your OpenLI deployment.
+
+```bash
+sudo apt install libtrace4-tools
+```
+
 ## What is installed
 
 #### 1. OpenLI binaries end up in `/usr/bin`.
