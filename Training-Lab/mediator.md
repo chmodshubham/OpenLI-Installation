@@ -154,6 +154,6 @@ service openli-mediator stop
 stop_mediator.sh
 ```
 
-[Collector Configuration](./collector-configuration.md)
+[Collector Configuration](./collector.md)
 
 

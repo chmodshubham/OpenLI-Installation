@@ -84,4 +84,4 @@ docker stop openli-provisioner
 Running `setup.sh` again will stop and recreate the containers.
 
 
-[Provisioner Configuration](./provisioner-configuration.md)
+[Provisioner Configuration](./provisioner.md)
