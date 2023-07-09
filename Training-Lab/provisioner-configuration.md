@@ -106,8 +106,4 @@ service openli-provisioner stop
 stop_provisioner.sh
 ```
 
-
-
-
-
-
+[Mediator Configuration](./mediator-configuration.md)

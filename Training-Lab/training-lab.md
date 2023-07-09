@@ -1,4 +1,4 @@
-# OpenLI Training Lab:
+# OpenLI Training Lab
 
 Sandbox environment for experimenting with OpenLI:
 
@@ -72,7 +72,7 @@ docker exec -it openli-provisioner /bin/bash
 docker exec -it openli-agency /bin/bash
 ```
 
-#### 3. Container Removal
+### Container Removal
 
 ```bash
 docker stop openli-agency
@@ -82,3 +82,6 @@ docker stop openli-provisioner
 ```
 
 Running `setup.sh` again will stop and recreate the containers.
+
+
+[Provisioner Configuration](./provisioner-configuration.md)
