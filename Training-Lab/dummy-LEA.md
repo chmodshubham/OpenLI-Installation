@@ -1,136 +1,138 @@
-# The Collector
+# Dummy LEA
 
-**Intercepts network traffic and encodes into ETSI format**
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/69400da6-8931-4d9b-b443-06993f775e60)
 
-* Receives instructions from the provisioner
-* Monitors session management protocols for target identities
-* Intercepts packets that belong to an intercept target
-* Labels and sequences intercepted packets о
-* Forwards encoded records to the mediator
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/cf5e4267-cdc3-40aa-be54-e773713e3ca5)
 
-## Collector Configuration
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/2902ebd5-8378-4cb1-8e19-c33aafaa4243)
+
+## Emulating an LEA
 
 ### 1. Container Login
 
 ```bash
-docker exec -it openli-collector /bin/bash
+docker exec -it openli-agency /bin/bash
 ```
 
-### 2. Query the container's IP Address on the openli-lab network
+### 2. Query the container's IP Address
 
 ```bash
 ip addr list eth1
 ```
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/dbec43c3-c6cc-49d7-b4bb-49b6f771f126)
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/e35ebfd2-a37b-41ea-bac5-8288cfe7ea0f)
 
-In my case, the IP address of `eth1` is `172.18.0.4`.
+In my case, the IP address of `eth1` is `172.19.0.3`.
 
-### 3. Configuration
+### 3. Select handover Ports
 
-```bash
-vim /etc/openli/collector-config.yaml
-```
+Choose a port number for **HI2** and **HI3** 
 
-```bash
-operatorid: <OPID>
-networkelementid: openli-lab
-interceptpointid: col001
+* **HI2** is for receiving **IRI** records from the mediator -- **41002**
+* **HI3** is for receiving **CC** records from the mediator -- **41003**
 
-encoderthreads: 2
-
-inputs:
-  - uri: eth2
-    threads: 2
-    hasher: radius
-    #filter:
-
-etsitls: no
-
-provisioneraddr: <PROVIP>
-provisionerport: <COLLECTORPORT>
-```
-
-#### A. Configuring Provisioner Connection
-
-Replace all instances of `<PROVIP>` and `<COLLECTORPORT>` with the Provisioner IP Address(`172.18.0.2`) and `9001` port number respectively, as configured in the previous sections.
+### 4. Start HI3 Handover
 
 ```bash
-operatorid: <OPID>
-networkelementid: openli-lab
-interceptpointid: col001
-
-encoderthreads: 2
-
-inputs:
-  - uri: eth2
-    threads: 2
-    hasher: radius
-    #filter:
-
-etsitls: no
-
-provisioneraddr: 172.18.0.2
-provisionerport: 9001
+tracepktdump etsilive:172.19.0.3:41003
 ```
 
-#### B. Collector Identity Fields
+No output just yet
+* Waiting for the mediator to connect to it.
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/71a3bbb3-a8d6-4022-95d6-2903cb881b0f)
+### 5. Start HI2 Handover
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/eb51c6c9-2c18-46b0-9809-c41867cd74dc)
-
-#### C. Configuring Identity
+On a 2nd shell on the `openli-agency` container, run another instance of `tracepktdump` on the HI2 port.
 
 ```bash
-operatorid: WAND
-networkelementid: openli-lab
-interceptpointid: col001
-
-encoderthreads: 2
-
-inputs:
-  - uri: eth2
-    threads: 2
-    hasher: radius
-    #filter:
-
-etsitls: no
-
-provisioneraddr: 172.18.0.2
-provisionerport: 9001
+tracepktdump etsilive:172.19.0.3:41002
 ```
 
-### 4. Logging with rsyslog
+### 6. RestAPI for Agencies
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/a22fdd4c-5c8e-4070-9dd0-116c1ff6a6ee)
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/1ae2f70c-00c1-48c8-a682-c1859f6bdabc)
+
+[Add Agency](http://172.18.0.2:8080/agency)
+
+
+Example `JSON` Object for our mock agency:
 
 ```bash
-cp /etc/openli/rsyslog.d/10-openli-collector.conf /etc/rsyslog.d/
-
-# This step is needed only when using the lab container
-stop_rsyslog.sh
-service rsyslog restart
+{
+"agencyid": "mocklea",
+"hi2address": "172.19.0.3″,
+"hi3address": "172.19.0.3″,
+"hi2port": "41002",
+"hiзport": "41003",
+"keepalivefreq": 60,
+"keepalivewait": 30
+}
 ```
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/dac912a2-6ee3-499d-a7a2-cbde340cd7d5)
-
-### 5. Starting the Collector
+Open another shell on the provisioner and run this command to `POST` the agency `JSON` object.
 
 ```bash
-service openli-collector start
+curl -X POST -H "Content-Type: application/json" -d '{
+  "agencyid": "mocklea",
+  "hi2address": "172.19.0.3",
+  "hi3address": "172.19.0.3",
+  "hi2port": "41002",
+  "hi3port": "41003",
+  "keepalivefreq": 60,
+  "keepalivewait": 30
+}' http://172.18.0.2:8080/agency
 ```
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/8797d54c-2b9e-4c9c-b71a-1d47769c6a62)
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/06f8020e-2d5f-47c9-976a-e505c6e7d04a)
 
-Examine Logs for any obvious error messages: `less /var/log/openli/collector.log`.
+### Handovers
 
-![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/10c96fd2-bd80-47cb-af24-1641f6b090da)
+Each handover is now handling 1 source.
 
-### Stopping the Collector
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/158d8ea1-f5cf-4b2b-967e-6e1ec27dad89)
+
+### Mediator Log
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/1a6679fe-aa06-4fbf-bc49-a9d075b50568)
+
+### Provisioner Log
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/2e0ea206-bc6f-467e-8edb-44e1a876c391)
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/8ce9aa60-1da5-4634-9fd6-f26056af4c29)
+
+### More RestAPI for Agencies
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/c33e80be-486b-4881-a094-6d0fe17d22ed)
 
 ```bash
-# on the lab container 
-service openli-collector stop
-stop_collector.sh
+curl -X DELETE http://172.18.0.2:8080/agency/mocklea
 ```
 
-[Simulating a dummy LEA](./dummy-LEA.md)
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/c5be1b1e-b7b4-4e66-a7d9-81793d0620e2)
+
+```bash
+curl -X GET http://172.18.0.2:8080/agency/mocklea
+```
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/dca3bda8-92e5-430b-9902-c1214c5f6543)
+
+```bash
+curl -X DELETE http://172.18.0.2:8080/agency
+```
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/82cdd4d3-0c06-4def-ab6d-78e59c55c1e0)
+
+```bash
+curl -X PUT -H "Content-Type: application/json" -d '{"hi2port": "11002", "hi3port": "11003", "agencyid": "mocklea"}' http://172.19.0.3:8080/agency
+```
+
+### More tracepktdump tips
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/ebf9ae1e-f5f8-4964-8680-7181fd71f221)
+
+### Other Libtrce tools
+
+![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/2b98240b-1e63-4bce-ad89-8c3f2c98b2a1)
