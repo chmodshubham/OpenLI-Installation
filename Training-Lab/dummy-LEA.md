@@ -54,8 +54,7 @@ tracepktdump etsilive:172.19.0.3:41002
 
 ![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/1ae2f70c-00c1-48c8-a682-c1859f6bdabc)
 
-[Add Agency](http://172.18.0.2:8080/agency)
-
+`http://172.18.0.2:8080/agency`
 
 Example `JSON` Object for our mock agency:
 
