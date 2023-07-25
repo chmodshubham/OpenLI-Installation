@@ -1,9 +1,9 @@
 # The Mediator
 
-**Delivers intercepted traffic to the LEAS**
+**Delivers intercepted traffic to the LEAs**
 
 * Receives the intercepts from the collectors
-* Establishes and maintains handovers to LEAS
+* Establishes and maintains handovers to LEAs
 * Ensure that the intercepted traffic goes to the right LEA
 
 ## Mediator Configuration
