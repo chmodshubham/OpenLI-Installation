@@ -56,10 +56,10 @@ After this script, 4 containers are now running on the host:
 
 ![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/3836a261-e8b3-4f06-9429-d5b92a57395a)
 
-`eth0`: access to upstream internet via docker-host. e.g. for installing software packages
-`eth1`: inter-component communication
-`eth2` on mediator: direct connection to the LEA
-`eth2` on collector: interface for packet capture(e.g. from the 5G NFs)
+**`eth0`**: access to upstream internet via docker-host. e.g. for installing software packages. <br>
+**`eth1`**: inter-component communication.<br>
+**`eth2` on mediator**: direct connection to the LEA.<br>
+**`eth2` on collector**: interface for packet capture(e.g. from the 5G NFs).<br>
 
 ![image](https://github.com/ShubhamKumar89/OpenLI-Installation/assets/97805339/4bfbf907-4638-47e9-8c35-e10e2af3791c)
 
