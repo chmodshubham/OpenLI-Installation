@@ -5,7 +5,7 @@
 * Receives instructions from the provisioner
 * Monitors session management protocols for target identities
 * Intercepts packets that belong to an intercept target
-* Labels and sequences intercepted packets о
+* Labels and sequences intercepted packets
 * Forwards encoded records to the mediator
 
 ## Collector Configuration
